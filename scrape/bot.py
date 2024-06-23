@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import random
 import time
 import re
@@ -41,28 +43,35 @@ class Bot:
         self.driver.find_element(By.NAME, "username").send_keys(username)
         password = self.driver.find_element(By.NAME, "password").send_keys(password)
         self.driver.find_element(By.XPATH, "//button[contains(.,'Log in')]").click()
+        time.sleep(3)
 
         code = input("Please enter the 2FA code sent to your mobile device: ")
         self.driver.find_element(By.NAME, "verificationCode").send_keys(code)
-        self.driver.find_element(By.XPATH, "//button[contains(.,'Confirm')]").click()
-        time.sleep(10)
+        confirm = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(.,'Confirm')]"))
+        )
+        confirm.click()
 
         self.driver.find_element(By.XPATH, "//button[contains(.,'Save info')]").click()
         time.sleep(3)
         self.driver.find_element(By.XPATH, "//button[contains(.,'Not Now')]").click()
 
     def get_my_followers(self, username):
-        self.goto("https://instagram.com/" + username + "/")
+        self.goto(f"https://instagram.com/{username}/")
         time.sleep(5)
-        my_followers_set = set()
-        followers = self.driver.find_elements(By.CLASS_NAME, "-nal3")
-        followers[1].click()
+
+        followers = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, f"//a[@href='/{username}/followers/']"))
+        )
+        followers.click()
         time.sleep(2)
+        
+        my_followers_set = set()
         initialise_vars = 'elem = document.getElementsByClassName("isgrP")[0]; followers = parseInt(document.getElementsByClassName("g47SY")[1].innerText); times = parseInt(followers * 0.14); followersInView1 = document.getElementsByClassName("FPmhX").length'
         initial_scroll = "elem.scrollTop += 500"
         next_scroll = "elem.scrollTop += 1500"
 
-        with open("./jquery-3.3.1.min.js", "r") as jquery_js:
+        with open("scrape/jquery-3.3.1.min.js") as jquery_js:
             # 3) Read the jquery from a file
             jquery = jquery_js.read()
             # 4) Load jquery lib
