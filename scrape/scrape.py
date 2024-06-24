@@ -59,7 +59,7 @@ if __name__ == "__main__":
     b.setUp()
     b.login(config.username, config.password)
 
-    followers = b.get_my_followers(config.username)
+    followers = list(b.get_my_followers(config.username))
     write_followers(followers)
 
     get_relations(b, config.username, followers)

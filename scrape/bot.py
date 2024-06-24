@@ -87,9 +87,8 @@ class Bot:
 
         return my_followers
 
-    def get_followers(self, followers, start_profile, relations_file):
-
-        for profile in followers[start_profile - 1 :]:
+    def get_followers(self, my_followers, start_profile, filename="relations.txt"):
+        for profile in my_followers[start_profile - 1 :]:
             self.goto(f"https://instagram.com/{profile}/")
             button = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
@@ -113,11 +112,18 @@ class Bot:
 
                 for follower in followers:
                     name = follower.text
-                    my_followers.add(name)
-                    print(name)
+                    if name in my_followers:
+                        users.add((profile, name))
+                        print(name)
 
                 ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
                 time.sleep(1)
+
+            with open(filename, "a") as f:
+                for relation in users:
+                    f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/")
+
+            print(f"{profile} follows {len(users)} of your connections")
 
         """
         n_my_followers = len(followers)
