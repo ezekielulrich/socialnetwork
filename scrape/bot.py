@@ -89,39 +89,44 @@ class Bot:
         for profile in my_followers[start_profile - 1 :]:
             print(f"{count} / {len(my_followers)}")
 
-            self.goto(f"https://instagram.com/{profile}/")
-            button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, f"//a[@href='/{profile}/followers/']")
+            try: 
+                self.goto(f"https://instagram.com/{profile}/")
+                button = WebDriverWait(self.driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, f"//a[@href='/{profile}/followers/']")
+                    )
                 )
-            )
-            button.click()
+                button.click()
 
-            users = set()
-            old_last = None
-            while True:
-                followers = self.driver.find_elements(
-                    By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]'
-                )
+                users = set()
+                old_last = None
+                while True:
+                    followers = self.driver.find_elements(
+                        By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]'
+                    )
 
-                last = followers[-1]
-                if last == old_last:
-                    break
-                old_last = last
-                last.location_once_scrolled_into_view
+                    last = followers[-1]
+                    if last == old_last:
+                        break
+                    old_last = last
+                    last.location_once_scrolled_into_view
 
-                for follower in followers:
-                    name = follower.text
-                    if name in my_followers:
-                        users.add((profile, name))
-                        print(name)
+                    for follower in followers:
+                        name = follower.text
+                        if name in my_followers:
+                            users.add((profile, name))
+                            print(name)
 
-                ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
-                time.sleep(1)
+                    ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
+                    time.sleep(1)
 
-            with open(filename, "a") as f:
-                for relation in users:
-                    f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/")
+                with open(filename, "a") as f:
+                    for relation in users:
+                        f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/")
+
+            except Exception as ex: 
+                print(f"Error, skipping: {ex}")
+                pass
 
             print(f"{profile} follows {len(users)} of your connections")
 
