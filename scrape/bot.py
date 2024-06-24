@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 import random
 import time
 import re
@@ -30,7 +31,6 @@ class Bot:
         self.driver.quit()
 
     def goto(self, url):
-        """Find and click top-right button"""
         try:
             self.driver.get(url)
         except NoSuchElementException as ex:
@@ -52,55 +52,42 @@ class Bot:
         )
         confirm.click()
 
-        self.driver.find_element(By.XPATH, "//button[contains(.,'Save info')]").click()
-        time.sleep(3)
+        saveinfo = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(.,'Save info')]"))
+        )
+        saveinfo.click()
         self.driver.find_element(By.XPATH, "//button[contains(.,'Not Now')]").click()
 
     def get_my_followers(self, username):
         self.goto(f"https://instagram.com/{username}/")
-        time.sleep(5)
 
         followers = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, f"//a[@href='/{username}/followers/']"))
         )
         followers.click()
-        time.sleep(2)
+
+        my_followers = set()
         
-        my_followers_set = set()
-        initialise_vars = 'elem = document.getElementsByClassName("isgrP")[0]; followers = parseInt(document.getElementsByClassName("g47SY")[1].innerText); times = parseInt(followers * 0.14); followersInView1 = document.getElementsByClassName("FPmhX").length'
-        initial_scroll = "elem.scrollTop += 500"
-        next_scroll = "elem.scrollTop += 1500"
+        print("Finding followers")
+        old_last = None
+        while True:
+            followers = self.driver.find_elements(By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]')
 
-        with open("scrape/jquery-3.3.1.min.js") as jquery_js:
-            # 3) Read the jquery from a file
-            jquery = jquery_js.read()
-            # 4) Load jquery lib
-            self.driver.execute_script(jquery)
-            # scroll down the page
-            self.driver.execute_script(initialise_vars)
-            # self.driver.execute_script(scroll_followers)
-            self.driver.execute_script(initial_scroll)
-            time.sleep(3)
+            last = followers[-1]
+            if last == old_last:
+                break
+            old_last = last
+            last.location_once_scrolled_into_view
 
-            next = True
-            while next:
-                n_li_1 = len(self.driver.find_elements(By.CLASS_NAME, "FPmhX"))
-                self.driver.execute_script(next_scroll)
-                time.sleep(1.5)
-                n_li_2 = len(self.driver.find_elements(By.CLASS_NAME, "FPmhX"))
-                if n_li_1 != n_li_2:
-                    following = self.driver.find_elements(By.XPATH, 
-                        "//*[contains(text(), 'Following')]"
-                    )
-                    for follow in following:
-                        el = follow.find_element(By.XPATH, "../..")
-                        el = el.find_element(By.TAG_NAME, "a")
-                        profile = el.get_attribute("href")
-                        my_followers_set.add(profile)
-                else:
-                    next = False
-
-            return my_followers_set
+            for follower in followers:
+                name = follower.text
+                my_followers.add(name)
+                print(name)
+            
+            ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
+            time.sleep(1)
+         
+        return my_followers
 
     def get_followers(self, my_followers_arr, start_profile, relations_file):
         n_my_followers = len(my_followers_arr)
