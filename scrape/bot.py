@@ -65,7 +65,6 @@ class Bot:
 
         my_followers = set()
 
-        print("Finding followers")
         old_last = None
         while True:
             followers = self.driver.find_elements(
@@ -89,6 +88,38 @@ class Bot:
         return my_followers
 
     def get_followers(self, followers, start_profile, relations_file):
+
+        for profile in followers[start_profile - 1 :]:
+            self.goto(f"https://instagram.com/{profile}/")
+            button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, f"//a[@href='/{profile}/followers/']")
+                )
+            )
+            button.click()
+
+            users = set()
+            old_last = None
+            while True:
+                followers = self.driver.find_elements(
+                    By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]'
+                )
+
+                last = followers[-1]
+                if last == old_last:
+                    break
+                old_last = last
+                last.location_once_scrolled_into_view
+
+                for follower in followers:
+                    name = follower.text
+                    my_followers.add(name)
+                    print(name)
+
+                ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
+                time.sleep(1)
+
+        """
         n_my_followers = len(followers)
         count_my_followers = start_profile - 1
 
@@ -96,7 +127,7 @@ class Bot:
             followers[-1]
         ]:
             print("Start scraping " + current_profile)
-            self.goto(current_profile)
+            self.goto(f"https://instagram.com/{current_profile}/")
             time.sleep(random.randint(5, 20))
             last_5_following = collections.deque(
                 [1, 2, 3, 4, 5]
@@ -165,7 +196,7 @@ class Bot:
                         self.times_restarted += 1
                         if self.times_restarted == 4:
                             print(
-                                "Instagram keeps on blocking your request. Terminating program. Start it again later."
+                                "Instagram is blocking your request. Terminating program. Start it again later."
                             )
                             sys.exit()
                         time.sleep(7)
@@ -192,3 +223,4 @@ class Bot:
                 )
 
         sys.exit()
+        """
