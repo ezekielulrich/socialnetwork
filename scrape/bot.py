@@ -20,9 +20,7 @@ class Bot:
 
         self.driver = webdriver.Firefox(options=options)
         self.driver.implicitly_wait(20)
-        self.times_restarted = (
-            0
-        )
+        self.times_restarted = 0
 
     def tear_down(self):
         self.driver.quit()
@@ -59,16 +57,20 @@ class Bot:
         self.goto(f"https://instagram.com/{username}/")
 
         followers = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, f"//a[@href='/{username}/followers/']"))
+            EC.element_to_be_clickable(
+                (By.XPATH, f"//a[@href='/{username}/followers/']")
+            )
         )
         followers.click()
 
         my_followers = set()
-        
+
         print("Finding followers")
         old_last = None
         while True:
-            followers = self.driver.find_elements(By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]')
+            followers = self.driver.find_elements(
+                By.XPATH, '//span[@class="_ap3a _aaco _aacw _aacx _aad7 _aade"]'
+            )
 
             last = followers[-1]
             if last == old_last:
@@ -80,18 +82,18 @@ class Bot:
                 name = follower.text
                 my_followers.add(name)
                 print(name)
-            
+
             ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
             time.sleep(1)
-         
+
         return my_followers
 
-    def get_followers(self, my_followers_arr, start_profile, relations_file):
-        n_my_followers = len(my_followers_arr)
+    def get_followers(self, followers, start_profile, relations_file):
+        n_my_followers = len(followers)
         count_my_followers = start_profile - 1
 
-        for current_profile in my_followers_arr[start_profile - 1 : -1] + [
-            my_followers_arr[-1]
+        for current_profile in followers[start_profile - 1 : -1] + [
+            followers[-1]
         ]:
             print("Start scraping " + current_profile)
             self.goto(current_profile)
@@ -168,7 +170,7 @@ class Bot:
                             sys.exit()
                         time.sleep(7)
                         self.get_followers(
-                            my_followers_arr, count_my_followers, relations_file
+                            followers, count_my_followers, relations_file
                         )
 
                 self.times_restarted = 0
@@ -176,7 +178,7 @@ class Bot:
                 following = self.driver.find_elements(By.CLASS_NAME, "FPmhX")
                 for follow in following:
                     profile = follow.get_attribute("href")
-                    if profile in my_followers_arr:
+                    if profile in followers:
                         follow_set.add((current_profile, profile))
 
                 with open(relations_file, "a") as outfile:

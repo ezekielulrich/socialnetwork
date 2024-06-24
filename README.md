@@ -3,5 +3,5 @@
 ## TL;DR
 
 ```console
-python main.py --username username --password password
+python scrape/scrape.py --username username --password password
 ```

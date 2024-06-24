@@ -2,13 +2,15 @@ import json
 import re
 import argparse
 
+
 def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if v.lower() in ("yes", "true", "t", "y", "1"):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         return False
     else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
 
 def relations_to_json(config):
     my_name = config.username
@@ -21,11 +23,15 @@ def relations_to_json(config):
     dict = {}
     name_to_id = {}
 
-    with open(input_txt_file, 'r') as f:
+    with open(input_txt_file, "r") as f:
         for line in f:
             accounts = line.split(" ")
-            account_1 = re.search('https://www.instagram.com/(.*)/', accounts[0]).group(1)
-            account_2 = re.search('https://www.instagram.com/(.*)/', accounts[1]).group(1)
+            account_1 = re.search("https://www.instagram.com/(.*)/", accounts[0]).group(
+                1
+            )
+            account_2 = re.search("https://www.instagram.com/(.*)/", accounts[1]).group(
+                1
+            )
 
             nodes.add(account_1)
             if include_me:
@@ -56,29 +62,44 @@ def relations_to_json(config):
         if (accounts[1], accounts[0]) in edges:
             bi_links.add((id_1, id_2))
             if (id_2, id_1) not in bi_links:
-                dict["links"].append({"id": id_l, "source": id_1, "target": id_2, "value": 0.3, "bi_directional": True})
+                dict["links"].append(
+                    {
+                        "id": id_l,
+                        "source": id_1,
+                        "target": id_2,
+                        "value": 0.3,
+                        "bi_directional": True,
+                    }
+                )
                 id_l += 1
         else:
-            dict["links"].append({"id": id_l, "source": id_1, "target": id_2, "value": 0.3, "bi_directional": False})
+            dict["links"].append(
+                {
+                    "id": id_l,
+                    "source": id_1,
+                    "target": id_2,
+                    "value": 0.3,
+                    "bi_directional": False,
+                }
+            )
             id_l += 1
 
-    with open(output_json_file, 'w') as outfile:
+    with open(output_json_file, "w") as outfile:
         json.dump(dict, outfile)
 
     print("json created")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
     # input parameters
-    parser.add_argument('--username', type=str)
-    parser.add_argument('--input_txt_file', type=str)
-    parser.add_argument('--output_json_file', type=str)
-    parser.add_argument('--include_me', type=str2bool)
+    parser.add_argument("--username", type=str)
+    parser.add_argument("--input_txt_file", type=str)
+    parser.add_argument("--output_json_file", type=str)
+    parser.add_argument("--include_me", type=str2bool)
 
     config = parser.parse_args()
 
     relations_to_json(config)
-

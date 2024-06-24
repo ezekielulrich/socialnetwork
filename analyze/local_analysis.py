@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.font_manager import FontProperties
 
+
 def local_analysis(config):
     my_name = config.username
     include_me = config.include_me
@@ -42,35 +43,44 @@ def local_analysis(config):
     # Table summarising results
     fig, ax = plt.subplots()
     fig.patch.set_visible(False)
-    ax.axis('off')
-    ax.axis('tight')
-    data = [centrality_to_str_arr(bet_cen),
-                           centrality_to_str_arr(clo_cen),
-                           centrality_to_str_arr(in_deg_cen),
-                           centrality_to_str_arr(out_deg_cen),
-                           centrality_to_str_arr(page_rank)]
+    ax.axis("off")
+    ax.axis("tight")
+    data = [
+        centrality_to_str_arr(bet_cen),
+        centrality_to_str_arr(clo_cen),
+        centrality_to_str_arr(in_deg_cen),
+        centrality_to_str_arr(out_deg_cen),
+        centrality_to_str_arr(page_rank),
+    ]
     data = np.transpose(data)
-    table = ax.table(colLabels=['Betweenness Centrality', 'Closeness Centrality', 'In-Degree Centrality', 'Out-Degree Centrality', 'PageRank'],
-                     cellText=data,
-                     loc='center')
+    table = ax.table(
+        colLabels=[
+            "Betweenness Centrality",
+            "Closeness Centrality",
+            "In-Degree Centrality",
+            "Out-Degree Centrality",
+            "PageRank",
+        ],
+        cellText=data,
+        loc="center",
+    )
     for (row, col), cell in table.get_celld().items():
         if (row == 0) or (col == -1):
-            cell.set_text_props(fontproperties=FontProperties(weight='bold'))
+            cell.set_text_props(fontproperties=FontProperties(weight="bold"))
     fig.tight_layout()
     plt.savefig("./centrality.png", dpi=300)
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
     # input parameters
-    parser.add_argument('--username', type=str)
-    parser.add_argument('--input_txt_file', type=str)
-    parser.add_argument('--include_me', type=str2bool)
+    parser.add_argument("--username", type=str)
+    parser.add_argument("--input_txt_file", type=str)
+    parser.add_argument("--include_me", type=str2bool)
 
     config = parser.parse_args()
 
     local_analysis(config)
-
