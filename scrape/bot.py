@@ -26,7 +26,7 @@ class Bot:
         except NoSuchElementException as ex:
             self.fail(ex.msg)
 
-    def login(self, username, password):
+    def login(self, username, password, tfa=True):
 
         self.goto("https://www.instagram.com/accounts/login/")
 
@@ -35,12 +35,13 @@ class Bot:
         self.driver.find_element(By.XPATH, "//button[contains(.,'Log in')]").click()
         time.sleep(3)
 
-        code = input("Please enter the 2FA code sent to your mobile device: ")
-        self.driver.find_element(By.NAME, "verificationCode").send_keys(code)
-        confirm = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(.,'Confirm')]"))
-        )
-        confirm.click()
+        if tfa:
+            code = input("Please enter the 2FA code sent to your mobile device: ")
+            self.driver.find_element(By.NAME, "verificationCode").send_keys(code)
+            confirm = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(.,'Confirm')]"))
+            )
+            confirm.click()
 
         saveinfo = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(.,'Save info')]"))
