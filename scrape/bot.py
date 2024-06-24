@@ -88,7 +88,11 @@ class Bot:
         return my_followers
 
     def get_followers(self, my_followers, start_profile, filename="relations.txt"):
+        count = start_profile - 1
+
         for profile in my_followers[start_profile - 1 :]:
+            print(f"{count} / {len(my_followers)}")
+
             self.goto(f"https://instagram.com/{profile}/")
             button = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
@@ -125,6 +129,12 @@ class Bot:
 
             print(f"{profile} follows {len(users)} of your connections")
 
+            with open(
+                "start_profile.txt", "w+"
+            ) as f:  # keep track of last profile checked
+                f.write(str(count))
+                count += 1
+
         """
         n_my_followers = len(followers)
         count_my_followers = start_profile - 1
@@ -132,13 +142,6 @@ class Bot:
         for current_profile in followers[start_profile - 1 : -1] + [
             followers[-1]
         ]:
-            print("Start scraping " + current_profile)
-            self.goto(f"https://instagram.com/{current_profile}/")
-            time.sleep(random.randint(5, 20))
-            last_5_following = collections.deque(
-                [1, 2, 3, 4, 5]
-            )  # queue to keep track of Instagram blocking scroll requests
-            count_my_followers += 1
 
             with open(
                 "start_profile.txt", "w+"
@@ -218,15 +221,6 @@ class Bot:
                     if profile in followers:
                         follow_set.add((current_profile, profile))
 
-                with open(relations_file, "a") as outfile:
-                    for relation in follow_set:
-                        outfile.write(relation[0] + " " + relation[1] + "\n")
-
-                print(
-                    "This person follows "
-                    + str(len(follow_set))
-                    + " of your connections. \n"
-                )
 
         sys.exit()
         """
