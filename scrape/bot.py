@@ -122,7 +122,7 @@ class Bot:
 
                 with open(filename, "a") as f:
                     for relation in users:
-                        f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/")
+                        f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/\n")
 
             except Exception as ex: 
                 print(f"Error, skipping: {ex}")
