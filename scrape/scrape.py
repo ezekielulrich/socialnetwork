@@ -1,4 +1,4 @@
-from scrape.bot import Bot
+from bot import Bot
 import argparse
 import os.path
 
@@ -42,8 +42,6 @@ def write_relations(my_followers_arr, username, filename="relations.txt"):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-
-    # input parameters
     parser.add_argument('--username', type=str)
     parser.add_argument('--password', type=str)
 
@@ -55,3 +53,7 @@ if __name__ == '__main__':
 
     followers = b.get_my_followers(config.username)
     write_followers(followers)
+
+    
+
+    

@@ -15,19 +15,16 @@ import sys
 
 class Bot:
     def setUp(self):
-        """Start web driver"""
-
         options = webdriver.FirefoxOptions()
         # options.add_argument("--headless")
 
         self.driver = webdriver.Firefox(options=options)
         self.driver.implicitly_wait(20)
         self.times_restarted = (
-            0  # keep track of how many times profile page has to be refreshed
+            0
         )
 
     def tear_down(self):
-        """Stop web driver"""
         self.driver.quit()
 
     def goto(self, url):
