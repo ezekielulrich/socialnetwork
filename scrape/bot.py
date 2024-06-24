@@ -118,7 +118,7 @@ class Bot:
                             print(name)
 
                     ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
-                    time.sleep(1)
+                    time.sleep(2)
 
                 with open(filename, "a") as f:
                     for relation in users:
