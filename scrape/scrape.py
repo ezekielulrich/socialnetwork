@@ -4,12 +4,9 @@ import os.path
 
 
 def get_relations(bot, username, followers, filename="relations.txt"):
-    if not os.path.isfile(filename):
-        write_relations(followers, username)
-
     if os.path.isfile("start_profile.txt"):
         start_profile = get_start_profile()
-        print("Start scraping at profile nr " + str(start_profile))
+        print(f"Start scraping at profile {start_profile}")
     else:
         start_profile = 1
         with open("start_profile.txt", "w+") as outfile:
@@ -29,24 +26,6 @@ def write_followers(followers, filename="followers.txt"):
             f.write(follower + "\n")
 
 
-def write_relations(followers, username, filename="relations.txt"):
-    with open(filename, "w+") as f:
-        for key in followers:
-            line = (
-                key
-                + " "
-                + "https://www.instagram.com/"
-                + username
-                + "/\n"
-                + "https://www.instagram.com/"
-                + username
-                + "/ "
-                + key
-                + "\n"
-            )
-            f.write(line)
-
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -57,9 +36,12 @@ if __name__ == "__main__":
 
     b = Bot()
     b.setUp()
+
     b.login(config.username, config.password)
 
     followers = list(b.get_my_followers(config.username))
     write_followers(followers)
 
-    get_relations(b, config.username, followers)
+    # get_relations(b, config.username, followers)
+    
+    b.tear_down()

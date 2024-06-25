@@ -1,5 +1,6 @@
 __pycache__
 .vscode
-requirements.txt
 relations.txt
+followers.txt
 start_profile.txt
+cookies.pkl
