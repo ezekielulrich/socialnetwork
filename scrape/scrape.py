@@ -30,8 +30,7 @@ if __name__ == "__main__":
 
     b.login(config.username, config.password)
 
-    followers = list(b.get_my_followers(config.username))
-    write_followers(followers)
+    followers = b.get_my_followers(config.username)
 
     get_relations(b, config.username, followers)
     

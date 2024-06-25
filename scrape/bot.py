@@ -105,6 +105,8 @@ class Bot:
             for follower in list(my_followers):
                 f.write(follower + "\n")
 
+        return list(my_followers)
+
     def get_followers(self, my_followers, start_profile, filename="relations.txt"):
         count = start_profile - 1
 
