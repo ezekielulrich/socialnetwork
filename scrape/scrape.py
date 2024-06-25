@@ -4,20 +4,17 @@ import os.path
 
 
 def get_relations(bot, username, followers, filename="relations.txt"):
+    start_profile = 1
+
     if os.path.isfile("start_profile.txt"):
-        start_profile = get_start_profile()
-        print(f"Start scraping at profile {start_profile}")
+        with open("start_profile.txt") as f:
+            start_profile = int(f.readline())
+        print(f"Started at profile {start_profile}")
     else:
-        start_profile = 1
-        with open("start_profile.txt", "w+") as outfile:
-            outfile.write("1")
+        with open("start_profile.txt", "w+") as f:
+            f.write("1")
 
-    bot.get_followers(followers, start_profile, filename)
-
-
-def get_start_profile():
-    with open("start_profile.txt") as f:
-        return int(f.readline())
+    bot.get_followers(followers, start_profile, filename)    
 
 
 def write_followers(followers, filename="followers.txt"):
@@ -42,6 +39,6 @@ if __name__ == "__main__":
     followers = list(b.get_my_followers(config.username))
     write_followers(followers)
 
-    # get_relations(b, config.username, followers)
+    get_relations(b, config.username, followers)
     
     b.tear_down()
