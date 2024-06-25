@@ -140,15 +140,15 @@ class Bot:
                         name = follower.text
                         if name in my_followers:
                             users.add((profile, name))
-                            print(name)
 
                     ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
                     time.sleep(uniform(2, 5))
 
                 with open(filename, "a") as f:
                     for relation in users:
-                        f.write(f"https://www.instagram.com/{relation[0]}/ https://www.instagram.com/{relation[1]}/\n")
+                        f.write(f"{relation[0]} {relation[1]}\n")
                 
+                print(users)
                 print(f"{profile} follows {len(users)} of your connections")
 
             except Exception as ex: 
