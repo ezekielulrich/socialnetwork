@@ -17,12 +17,6 @@ def get_relations(bot, username, followers, filename="relations.txt"):
     bot.get_followers(followers, start_profile, filename)    
 
 
-def write_followers(followers, filename="followers.txt"):
-    with open(filename, "w+") as f:
-        for follower in followers:
-            f.write(follower + "\n")
-
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()

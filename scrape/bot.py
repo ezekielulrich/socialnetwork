@@ -68,7 +68,7 @@ class Bot:
                 self.driver.add_cookie(cookie)
 
 
-    def get_my_followers(self, username):
+    def get_my_followers(self, username, filename="followers.txt"):
         self.goto(f"https://instagram.com/{username}/")
 
         followers = WebDriverWait(self.driver, 10).until(
@@ -101,7 +101,9 @@ class Bot:
             ActionChains(self.driver).send_keys(Keys.CONTROL, Keys.END).perform()
             time.sleep(uniform(2, 4))
 
-        return my_followers
+        with open(filename, "w+") as f:
+            for follower in list(my_followers):
+                f.write(follower + "\n")
 
     def get_followers(self, my_followers, start_profile, filename="relations.txt"):
         count = start_profile - 1
@@ -156,4 +158,4 @@ class Bot:
                 "start_profile.txt", "w+"
             ) as f:
                 f.write(str(count))
-                count += 1
+                count += 1        
